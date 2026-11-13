@@ -1,10 +1,44 @@
 # Automação de Dashboard com Python e Django
 
-## Sistema de automação de relatórios para finalidades específicas, com dados de exemplo.
+**Sistema web para automatização, consolidação e atualização de relatórios Excel.**
 
-Versão de demonstração para portfólio, com quatro relatórios Excel inteiramente fictícios. A aplicação prepara os dados com pandas, atualiza uma planilha central pelo Excel (`win32com`) e oferece uma interface Django com autenticação, acompanhamento de progresso, histórico e download.
+Projeto de portfólio desenvolvido com Python e Django para demonstrar a automação de processos administrativos, o tratamento de dados e a atualização de dashboards em planilhas eletrônicas. A aplicação oferece uma interface web autenticada para iniciar atualizações, acompanhar o progresso, consultar o histórico e baixar o Dashboard atualizado.
 
-O sistema automatiza o tratamento de relatórios para finalidades específicas. A demonstração usa arquivos locais fictícios em `.xlsx`. O motor principal controla o Excel instalado com `win32com`; uma alternativa explícita usa `openpyxl`. A origem padrão é local; opcionalmente, é possível ler os quatro anexos de uma conta Gmail pessoal por IMAP/TLS. Os exemplos demonstram vendas, recebimentos, custos e despesas de uma empresa fictícia.
+## Principais funcionalidades
+
+- **Automação de relatórios:** leitura, preparação, validação e consolidação de dados com pandas.
+- **Integração com Excel:** motor principal `win32com` (Windows com Excel instalado) e alternativa explícita `openpyxl`.
+- **Interface web:** execução, acompanhamento de progresso, histórico e download por meio do Django.
+- **Controle de acesso:** autenticação, cadastro, aprovação de usuários e permissões para execução.
+- **Agendamento:** preferências de execução programada, sujeitas às condições de configuração e ao modo de operação; salvar preferências não instala uma tarefa no Windows.
+- **Origem dos relatórios:** arquivos locais por padrão ou leitura opcional de anexos de Gmail pessoal por IMAP/TLS.
+- **Demonstração segura:** quatro relatórios e um Dashboard `.xlsx` com dados inteiramente fictícios.
+
+## Tecnologias utilizadas
+
+| Tecnologia | Utilização |
+| --- | --- |
+| Python | Linguagem principal e execução da automação |
+| Django 5.2 | Interface web, autenticação e histórico |
+| pandas | Leitura, tratamento e validação dos relatórios |
+| pywin32 (`win32com`) | Atualização e recálculo pelo Microsoft Excel no Windows |
+| openpyxl | Alternativa de atualização de planilhas sem Excel instalado |
+| SQLite | Banco de dados local da aplicação |
+| HTML e CSS | Interface do usuário |
+| Waitress | Servidor WSGI para demonstração local |
+| Git e GitHub | Versionamento e disponibilização do código |
+
+## Sobre esta versão de demonstração
+
+Este repositório apresenta um cenário didático de uma **empresa fictícia**, com quatro relatórios: **vendas, recebimentos, custos e despesas**. Os arquivos estão na pasta [`dados_demo/`](dados_demo/) e não representam operações reais.
+
+A execução padrão utiliza arquivos locais. A integração com Gmail é opcional e exige configuração própria. O Dashboard demonstrativo é `.xlsx` e não inclui macros nem processamento de `.xlsb`.
+
+A aplicação foi preparada para execução local. Publicar o código no GitHub não hospeda o sistema; uma implantação em outro ambiente exige configuração e validação específicas.
+
+## Por onde começar
+
+Para executar o projeto, consulte as instruções abaixo sobre preparação do ambiente, configuração da `.env`, criação do usuário e inicialização do Django. Para conhecer os componentes internos, consulte a [documentação técnica](docs/DOCUMENTACAO_TECNICA.md).
 
 ## NAVEGAÇÃO RÁPIDA
 
