@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Solicitar cadastro | Automação Dashboard{% endblock %}
+{% block content %}<section class="panel auth-panel"><h1>Criar conta</h1>
+<p class="muted">O acesso somente será liberado após aprovação de um administrador.</p>
+<form method="post" class="stack">{% csrf_token %}
+{% for field in form %}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}
+{% for error in field.errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+{% if field.help_text %}<div class="help">{{ field.help_text }}</div>{% endif %}{% endfor %}
+<button class="btn btn-primary" type="submit">Enviar solicitação</button></form>
+<p class="auth-help"><a href="{% url 'login' %}">Voltar ao login</a></p></section>{% endblock %}

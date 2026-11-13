@@ -1,0 +1,10 @@
+Olá,
+
+Recebemos uma solicitação de redefinição de senha para sua conta no sistema Automação Dashboard.
+
+Para criar uma nova senha, acesse o link abaixo:
+{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
+
+Se você não solicitou a alteração, ignore esta mensagem. Sua senha atual continuará válida.
+
+Este é um e-mail automático. Não responda.

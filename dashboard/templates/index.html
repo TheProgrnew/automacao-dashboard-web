@@ -1,0 +1,92 @@
+{% extends 'base.html' %}{% block title %}Painel | Automação Dashboard{% endblock %}{% block content %}
+<p class="alert">Portfólio: dados inteiramente fictícios. Motor selecionado: {{ motor_demo }}. Origem dos relatórios: {{ origem_demo }}. Execute preparar_demo.py antes da primeira atualização.</p><div class="page-heading"><div><p class="eyebrow">PAINEL ADMINISTRATIVO</p><h1>Gerenciamento do Dashboard</h1><p class="muted">Acompanhe as execuções e obtenha o arquivo demonstrativo atualizado.</p></div><span class="pill">{% if modo_teste %}Demonstração com dados fictícios{% else %}Modo configurado: dados fictícios{% endif %}</span></div>
+<div class="cards"><article class="metric"><span class="metric-icon">⚙</span><div><strong>Configurações</strong><p>Diretórios e arquivo Excel</p></div></article><article class="metric"><span class="metric-icon">↻</span><div><strong>Atualização manual</strong><p>Execução controlada</p></div></article><article class="metric"><span class="metric-icon">◷</span><div><strong>Histórico</strong><p>Últimas 15 execuções</p></div></article></div>
+<div class="two-col"><section class="panel"><div class="panel-heading"><h2>Configuração da automação</h2><p class="muted">Ambiente local com caminhos fixos para os dados fictícios.</p></div>
+{% if modo_teste %}
+<p>Modo teste ligado. Execute <code>python preparar_demo.py</code>.</p><p class="path">TESTE_AUTOMACAO/entrada<br>TESTE_AUTOMACAO/saida<br>TESTE_AUTOMACAO/dashboard/dashboard_exemplo.xlsx</p>
+{% elif user.is_staff %}
+<p>Modo teste desligado. Prepare com <code>python preparar_demo.py --ambiente configurado</code> e salve os três caminhos completos abaixo da pasta <code>{{ pasta_configurada }}</code>.</p>
+<form method="post" action="{% url 'configurar_automacao' %}" class="stack">{% csrf_token %}
+<label for="dashboard">Dashboard fictício (.xlsx)</label><input id="dashboard" name="caminho_dashboard" value="{{ configuracao.caminho_dashboard|default:'' }}" required>
+<label for="entrada">Pasta de entrada</label><input id="entrada" name="pasta_entrada" value="{{ configuracao.pasta_entrada|default:'' }}" required>
+<label for="saida">Pasta de saída</label><input id="saida" name="pasta_saida" value="{{ configuracao.pasta_saida|default:'' }}" required>
+<button class="btn btn-primary" type="submit">Salvar caminhos</button></form>
+{% else %}<p>Os caminhos são definidos pelo administrador. Os dados continuam fictícios.</p>{% endif %}
+</section><section class="panel"><div class="panel-heading"><h2>Operações</h2><p class="muted">Execute a rotina e faça download do arquivo salvo.</p></div>{% if user.is_staff %}<form id="form-progresso" method="post" action="{% url 'iniciar_atualizacao_assincrona' %}">{% csrf_token %}<button id="botao-atualizar" class="btn btn-primary full" type="submit">↻ Atualizar Dashboard</button></form>
+<div id="painel-progresso" hidden role="status" aria-live="polite" style="margin-top:1rem">
+  <p><strong id="texto-etapa">Aguardando...</strong> <span id="texto-percentual">0%</span></p>
+  <progress id="barra-progresso" max="100" value="0" style="width:100%"></progress>
+  <p id="indicador-atividade" class="muted">⏳ Acompanhando execução...</p>
+</div>{% else %}<p class="muted">A execução é restrita a administradores.</p>{% endif %}<a class="btn btn-outline full" href="{% url 'baixar_dashboard' %}">↓ Baixar Dashboard atualizado</a><p class="help">O navegador salvará o arquivo na pasta de downloads configurada no seu computador.</p><hr><h3>Arquivo demonstrativo</h3><p class="path">{{ caminho_demo }}</p></section></div>
+
+{% if user.is_staff %}
+<section class="panel" style="margin-top:1.5rem"><div class="panel-heading"><h2>Liberação administrativa do agendamento</h2><p class="muted">Apenas o administrador pode liberar o recurso para visualização. Bloquear também desativa a execução automática.</p></div>
+<form method="post" action="{% url 'liberar_agendamento' %}">{% csrf_token %}
+{% if agendamento_liberado %}<button class="btn btn-outline" type="submit" name="liberar" value="nao">Bloquear agendamento para todos</button>{% else %}<button class="btn btn-primary" type="submit" name="liberar" value="sim">Liberar agendamento</button>{% endif %}
+</form></section>
+{% endif %}
+{% if agendamento_liberado %}
+{% if user.is_staff %}
+<section class="panel" style="margin-top:1.5rem"><div class="panel-heading"><h2>Agendamento automático (administrador)</h2><p class="muted">Preferências didáticas herdadas da aplicação. A execução agendada permanece bloqueada nesta demonstração.</p></div>
+<form method="post" action="{% url 'configurar_agendamento' %}" class="stack">{% csrf_token %}
+<label><input type="checkbox" name="ativo" {% if agendamento.ativo %}checked{% endif %}> Habilitar execução automática</label>
+<label for="horario_agendamento">Horário local do servidor</label><input id="horario_agendamento" type="time" name="horario" value="{% if agendamento %}{{ agendamento.horario|time:'H:i' }}{% else %}08:00{% endif %}" required>
+<fieldset><legend>Dias da semana</legend>
+<label><input type="checkbox" name="dias_semana" value="0" {% if 0 in dias_agendamento %}checked{% endif %}> Segunda</label>
+<label><input type="checkbox" name="dias_semana" value="1" {% if 1 in dias_agendamento %}checked{% endif %}> Terça</label>
+<label><input type="checkbox" name="dias_semana" value="2" {% if 2 in dias_agendamento %}checked{% endif %}> Quarta</label>
+<label><input type="checkbox" name="dias_semana" value="3" {% if 3 in dias_agendamento %}checked{% endif %}> Quinta</label>
+<label><input type="checkbox" name="dias_semana" value="4" {% if 4 in dias_agendamento %}checked{% endif %}> Sexta</label>
+<label><input type="checkbox" name="dias_semana" value="5" {% if 5 in dias_agendamento %}checked{% endif %}> Sábado</label>
+<label><input type="checkbox" name="dias_semana" value="6" {% if 6 in dias_agendamento %}checked{% endif %}> Domingo</label>
+</fieldset><button class="btn btn-primary" type="submit">Salvar preferências de agendamento</button></form></section>
+{% else %}
+<section class="panel" style="margin-top:1.5rem"><h2>Agendamento autorizado</h2>
+<p>Execução automática: {% if agendamento_publico.ativo %}ativa{% else %}desativada{% endif %}</p>
+{% if agendamento_publico %}<p>Horário: {{ agendamento_publico.horario|time:'H:i' }}</p><p>Dias (0=segunda, 6=domingo): {{ agendamento_publico.dias_semana|join:', ' }}</p>{% endif %}
+</section>
+{% endif %}
+{% endif %}
+<section class="panel history"><div class="panel-heading"><h2>Histórico das últimas execuções</h2><p class="muted">Acompanhamento das atualizações realizadas no sistema.</p></div><div class="table-scroll"><table><thead><tr><th>Início</th><th>Usuário</th><th>Modo</th><th>Origem</th><th>Situação</th><th>Fim</th></tr></thead><tbody>{% for execucao in historico %}<tr><td>{{ execucao.iniciado_em|date:"d/m/Y H:i:s" }}</td><td>{{ execucao.usuario.username|default:"—" }}</td><td>{% if execucao.modo_teste %}Teste{% else %}Produção{% endif %}</td><td>{{ execucao.get_origem_display }}</td><td><span class="status status-{{ execucao.status }}">{{ execucao.get_status_display }}</span></td><td>{{ execucao.terminado_em|date:"d/m/Y H:i:s"|default:"—" }}</td></tr>{% empty %}<tr><td colspan="6">Nenhuma execução registrada.</td></tr>{% endfor %}</tbody></table></div></section>
+<script>
+(() => {
+ const form = document.getElementById('form-progresso');
+ if (!form) return;
+ const panel = document.getElementById('painel-progresso');
+ const button = document.getElementById('botao-atualizar');
+ const etapa = document.getElementById('texto-etapa');
+ const percentual = document.getElementById('texto-percentual');
+ const barra = document.getElementById('barra-progresso');
+ const indicador = document.getElementById('indicador-atividade');
+ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+ form.addEventListener('submit', async event => {
+   event.preventDefault();
+   if (!confirm('Deseja iniciar a atualização do Dashboard?')) return;
+   button.disabled = true;
+   panel.hidden = false;
+   etapa.textContent = 'Solicitando execução...';
+   try {
+     const response = await fetch(form.action, {method:'POST', body:new FormData(form), credentials:'same-origin'});
+     const data = await response.json();
+     if (!response.ok) throw new Error(data.erro || 'Não foi possível iniciar.');
+     while (true) {
+       await sleep(1500);
+       const statusResponse = await fetch(data.url, {credentials:'same-origin', cache:'no-store'});
+       if (!statusResponse.ok) throw new Error('Falha ao consultar progresso.');
+       const status = await statusResponse.json();
+       const valor = Math.min(100, Math.max(0, Number(status.progresso) || 0));
+       barra.value = valor;
+       percentual.textContent = `${valor}%`;
+       etapa.textContent = status.etapa || 'Processando...';
+       if (status.status !== 'executando') {
+         indicador.textContent = status.status === 'sucesso' ? '✓ Atualização concluída.' : '⚠ Atualização falhou. Consulte os logs.';
+         break;
+       }
+     }
+   } catch (error) { indicador.textContent = error.message; }
+   finally { button.disabled = false; }
+ });
+})();
+</script>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+# Segredos e configurações locais
+.env
+.env.*
+!.env.example
+# Ambientes, cache e ferramentas
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.vscode/
+.idea/
+# Estado local e arquivos gerados
+db.sqlite3
+*.sqlite3
+*.sqlite3-journal
+logs/
+LOGS/
+TESTE_AUTOMACAO/
+DEMO_CONFIGURADA/
+staticfiles/
+automacao_execucao.lock
+*.log
+~$*
+.DS_Store
+# dados_demo/*.xlsx são exclusivamente fictícios e devem ser versionados.

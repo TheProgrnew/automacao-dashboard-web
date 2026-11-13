@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block title %}Solicitação recebida | Automação Dashboard{% endblock %}
+{% block content %}<section class="panel auth-panel"><h1>Solicitação recebida</h1>
+<p>Seu cadastro foi registrado e aguarda aprovação de um administrador. Você ainda não pode entrar no sistema.</p>
+<p><a href="{% url 'login' %}">Voltar ao login</a></p></section>{% endblock %}

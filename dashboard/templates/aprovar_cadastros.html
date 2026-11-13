@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Aprovar cadastros | Automação Dashboard{% endblock %}
+{% block content %}<section class="panel"><h1>Solicitações de cadastro</h1>
+<p class="muted">Apenas administradores podem aprovar ou rejeitar solicitações.</p>
+{% for pendente in pendentes %}<div class="panel" style="margin: 1rem 0; padding: 1rem">
+<strong>{{ pendente.username }}</strong> — {{ pendente.get_full_name }} — {{ pendente.email }}
+<form method="post" class="inline">{% csrf_token %}<input type="hidden" name="usuario_id" value="{{ pendente.pk }}">
+<button class="btn btn-primary" type="submit" name="acao" value="aprovar">Aprovar</button>
+<button class="btn" type="submit" name="acao" value="rejeitar" onclick="return confirm('Rejeitar e excluir esta solicitação?')">Rejeitar</button>
+</form></div>{% empty %}<p>Não há cadastros pendentes.</p>{% endfor %}</section>{% endblock %}

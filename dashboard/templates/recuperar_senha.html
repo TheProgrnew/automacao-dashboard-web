@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% block title %}Recuperar senha{% endblock %}
+{% block content %}<section class="panel auth-panel"><h1>Recuperar acesso</h1><p class="muted">Informe o e-mail cadastrado. Se houver uma conta ativa associada a ele, enviaremos um link para criar uma nova senha.</p><form method="post" class="stack">{% csrf_token %}<label for="id_email">E-mail cadastrado</label>{{ form.email }}{% for error in form.email.errors %}<p class="field-error">{{ error }}</p>{% endfor %}<button type="submit" class="btn btn-primary">Enviar link de recuperação</button></form><p class="auth-help"><a href="{% url 'login' %}">Voltar ao login</a></p></section>{% endblock %}
